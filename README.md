@@ -103,3 +103,10 @@ pgsql
 .vscode/
 # OS
 .DS_Store Thumbs.db
+
+## Ejecución de Pruebas
+
+### Pruebas Unitarias
+Para ejecutar solo las pruebas unitarias:
+```bash
+./mvnw test -Dtest=ProductoServiceTest
