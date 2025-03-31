@@ -4,6 +4,7 @@ import com.example.productos.model.Producto;
 import com.example.productos.service.ProductoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -23,8 +24,11 @@ public class ProductoController {
     }
 
     @PostMapping
-    public Mono<Producto> crear(@RequestBody Producto producto) {
-        return service.guardar(producto);
+    public Mono<ResponseEntity<Producto>> crear(@RequestBody Producto producto) {
+        return service.guardar(producto)
+                .map(savedProducto -> ResponseEntity
+                        .status(HttpStatus.CREATED)
+                        .body(savedProducto));
     }
 
     @GetMapping("/{id}")
@@ -42,8 +46,9 @@ public class ProductoController {
     }
 
     @DeleteMapping("/{id}")
-    public Mono<Void> eliminar(@PathVariable String id) {
-        return service.eliminar(id);
+    public Mono<ResponseEntity<Void>> eliminar(@PathVariable String id) {
+        return service.eliminar(id)
+                .then(Mono.just(ResponseEntity.noContent().build()));
     }
 
     @GetMapping("/mensaje")

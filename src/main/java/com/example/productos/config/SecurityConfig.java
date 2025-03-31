@@ -18,7 +18,8 @@ public class SecurityConfig {
                         .pathMatchers("/api/**").authenticated()
                         .anyExchange().permitAll())
                 .httpBasic(Customizer.withDefaults())
-                .formLogin(Customizer.withDefaults());
+                .formLogin(Customizer.withDefaults())
+                .csrf(ServerHttpSecurity.CsrfSpec::disable);
         return http.build();
     }
 
