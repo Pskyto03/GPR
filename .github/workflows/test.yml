@@ -9,50 +9,14 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
-    services:
-      mongodb:
-        image: mongo:6.0
-        ports:
-          - 27017:27017
-        env:
-          MONGO_INITDB_DATABASE: testdb
-        options: >-
-          --health-cmd "mongosh --eval 'db.serverStatus()'"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-          --restart always
-
     steps:
-      - uses: actions/checkout@v4
-
+      - uses: actions/checkout@v3
+      
       - name: Configurar JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: "17"
-          distribution: "temurin"
-
-      - name: Esperar a que MongoDB esté listo
-        run: |
-          echo "Esperando a que MongoDB esté listo..."
-          for i in {1..10}; do
-            if docker exec mongodb mongosh --eval 'db.serverStatus()' > /dev/null 2>&1; then
-              echo "MongoDB está listo!"
-              break
-            fi
-            echo "Intento $i: MongoDB no está listo, esperando..."
-            sleep 5
-          done
-
+          java-version: '17'
+          distribution: 'temurin'
+      
       - name: Ejecutar pruebas
         run: ./mvnw test
-        env:
-          SPRING_DATA_MONGODB_URI: mongodb://localhost:27017/testdb
-
-      - name: Notificar fallo en Slack
-        if: failure()
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_MESSAGE: "Las pruebas en el proyecto GESTION-PRODUCTOS-REACTIVO han fallado"
